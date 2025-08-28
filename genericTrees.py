@@ -1,79 +1,59 @@
-from lists import MyList
+import random
 
-class genericTree():
-    def __init__(self, parent, value, children,level=0):
+from lists import Node, LinkedList
+
+class GenericTree:
+    def __init__(self, parent, children, value):
         self.parent = parent
-        self.value = value
         self.children = children
-        self.level = level
+        self.value = value
+     
+        if parent is None:
+            self.level = 0
+        else:
+            self.level = parent.level + 1
 
-    # FIXME - fix this fucking method and MyList.insert_head method
-    def generateChild(self, value):
-        child = genericTree(self, value, MyList(), self.level + 1)
-        self.children.insert_head(child)
+    def generateChild(self, value) -> "GenericTree":
+        child = GenericTree(self, LinkedList[GenericTree](), value)
+        self.children.insert_tail(child)
+        return child
 
-    def getChildren(self):
-        return self.children
+    # DFS preorder print
+    def __str__(self) -> str:
+        def recurse(node: "GenericTree", indent: int = 0) -> str:
+            spaces = "  " * indent
+            s = f"{spaces}Node({node.value})\n"
+            curr = node.children.head
+            while curr:
+                s += recurse(curr.value, indent + 1)
+                curr = curr.next
+            return s
+        return recurse(self)
+
+    # DFS postorder print    
+    # def __str__(self) -> str:
+    #     def recurse(node: "GenericTree", indent: int = 0) -> str:
+    #         spaces = "  " * indent
+    #         s = ""
+    #         curr = node.children.head
+    #         while curr:
+    #             s += recurse(curr.value, indent + 1)
+    #             curr = curr.next
+    #         s += f"{spaces}Node({node.value})\n"
+    #         return s
+    #     return recurse(self)
+
     
-    def __str__(self):
-        def build_str(node, indent=""):
-            # Print the current node value
-            result = f"{indent}{node.value}\n"
-            # Iterate children
-            child_list = node.children
-            while child_list is not None and not child_list.is_empty():
-                child_node = child_list.value  # genericTree
-                result += build_str(child_node, indent + "  ")
-                child_list = child_list.next
-            return result
+def generate_random_generic_tree(num_nodes: int) -> GenericTree:
+    root = GenericTree(None, LinkedList[GenericTree](), "root")
+    nodes = [root]
+    for i in range(1, num_nodes):
+        # Randomly select a parent from existing nodes
+        parent = random.choice(nodes)
+        child = parent.generateChild(f"node_{i}")
+        nodes.append(child)
+    return root
 
-        return build_str(self).rstrip()
-
-def test_generic_tree():
-    print("=== TEST genericTree ===")
-
-    # Create root node
-    root = genericTree(None, 1, MyList())
-    print("Root value:", root.value)   # 1
-    print("Root parent:", root.parent) # None
-    print(root)
-
-    # Add first child
-    root.generateChild(2)
-    print("\nAfter adding child 2:")
-    print(root)
-
-    # Add second child
-    root.generateChild(3)
-    print("\nAfter adding child 3:")
-    print(root)
-
-    root.generateChild(4)
-    print("\nAfter adding child 4:")
-    print(root)
-
-
-    # # Add child to node 2
-    # child2 = root.getChildren().value  # this is node with value=2 (since inserted at head last)
-    # child2.generateChild(4)
-    # child2.generateChild(5)
-    # print("\nAfter adding children 4 and 5 to node 2:")
-    # print(root)
-
-    # # Add child to node 3
-    # child3 = root.getChildren().next.value  # node with value=3
-    # child3.generateChild(6)
-    # print("\nAfter adding child 6 to node 3:")
-    # print(root)
-
-    # # Traversal check
-    # print("\nChildren of root (should be 3 and 2):")
-    # children = root.getChildren()
-    # while children is not None and not children.is_empty():
-    #     print(children.value.value, end=" ")
-    #     children = children.next
-    # print("\n")
-
-# Run tests
 if __name__ == "__main__":
-    test_generic_tree()
+    tree = generate_random_generic_tree(21)
+    print(tree)

@@ -14,6 +14,8 @@
 # poche volte su heap alti” per bubbling delle chiavi
 # Costo computazionale O(n)
 
+# https://www.youtube.com/watch?v=pAU21g-jBiE 
+
 from math import floor, ceil
 
 class Heap:
@@ -88,6 +90,14 @@ class Heap:
 
         self.buildHeap()
         return val
+    
+    def heapSort(self):
+        self.buildHeap()
+        last_i = len(self.array)-1
+
+        for end in range(last_i, -1,-1):
+            self.swap(0, end)
+            self.heapify(0, end)
 
     def __str__(self):
         if not self.array:
@@ -129,6 +139,12 @@ if __name__ == '__main__':
     h.insertKey(6)
     h.insertKey(1)
 
-    print(h)
+    # print(h)
     h.extractMinimumValue()
-    print(h)
+    # print(h)
+
+    initial_array = [1,6,17,21,2,4,3,9,0,5,23,8,24]
+    heap = Heap(initial_array, False)
+    print('unsorted:\n',heap)
+    heap.heapSort()
+    print('sorted:\n',heap)

@@ -1,159 +1,152 @@
-class MyList:
-    def __init__(self, value=None):
-        self.value = value
-        self.next = None
-    
-    def is_empty(self):
-        return self.value == None
+# class MyList:
+#     def __init__(self, value=None, next=None):
+#         self.value = value
+#         self.next = next
 
-    def insert_head(self, node):
-        MyList.insert_next(self,node)
-        self.value, node.value = node.value, self.value
+#     def is_empty(self):
+#         return self.value is None and self.next is None
 
-    def getValue(self):
-        return self.value
-    
-    @staticmethod
-    def create_list(value=None):
-        return MyList(value)
+#     def insert_head(self, node):
+#         self.value, node.value = node.value, self.value
 
-    @staticmethod
-    def insert_next(previous, insert):
-        insert.next = previous.next
-        previous.next = insert
 
-    @staticmethod
-    def insert_position(lst, node, index):
-        tmp = lst
-        for i in range(index):
-            tmp = tmp.next
+#         node.next = self.next
+#         self.next = node
+
+#     def insert_position(self, node, index):
+#         tmp = self.search(index-1)
+
+#         node.next = tmp.next
+#         tmp.next = node
+
+#     def insert_last(self, node):
+#         if self.value == None:
+#             self.value = node.value
+#             self.next = node.next
         
-        MyList.insert_next(tmp, node)
+#         else:
 
-    @staticmethod
-    def search(lst, index):
-        tmp = lst
-        for i in range(index):
-            if tmp == None:
-                print('not found.')
-                return
+#             tmp = self
 
-            tmp = tmp.next
+#             while (tmp.next is not None):
+#                 tmp = tmp.next
 
-        return tmp
+#             tmp.next = node
 
-    @staticmethod
-    def delete_from_list(lst, node):
-        tmp = lst
-        while(tmp is not None and tmp.next is not None):
-            if tmp.next.value == node.value:
-                tmp.next = tmp.next.next
-                return
+#     def delete(self, value):
+#         if self.value == value:
+#             if self.next is None:  
+#                 # Only one node in list
+#                 self.value = None
+#             else:
+#                 # Copy data from next node into current
+#                 self.value = self.next.value
+#                 self.next = self.next.next
+#             return True
+
+#         # Case 2: deleting non-head node
+#         prev = self
+#         curr = self.next
+
+#         while curr is not None:
+#             if curr.value == value:
+#                 prev.next = curr.next
+#                 return True
+#             prev, curr = curr, curr.next
+
+#         # Value not found
+#         return False
+
+#     def search(self, index):
+#         tmp = self
+#         for i in range(index):
+#             tmp = tmp.next
+#             if tmp is None:
+#                 print('index not found')
+#                 return None
             
-            tmp = tmp.next
+        
+#         return tmp
 
-    def __str__(self):
-        values = []
-        tmp = self
-        while tmp is not None and not tmp.is_empty():
-            values.append(str(tmp.value))
-            tmp = tmp.next
-        return " -> ".join(values) + " -> None"
+#     @staticmethod
+#     def insert_next(previous_node, next_node):
+#         next_node.next = previous_node.next
+#         previous_node.next = next_node
 
 
 
-def test_mylist():
-    print("=== TEST create_list ===")
-    l = MyList.create_list(10)
-    print(l.getValue() == 10)   # True
+#     def __str__(self):
+#         def build_str(self):
+#             if self ==  None:
+#                 return 'None'
+#             else:
+#                 return f'{self.value} -> {build_str(self.next)}'
+            
     
-    print("=== TEST is_empty ===")
-    empty = MyList()
-    print(empty.is_empty())     # True
-    print(l.is_empty())         # False
+#         return build_str(self)
 
-    print("=== TEST insert_head ===")
-    head = MyList(5)
-    head = head.insert_head(MyList(1))  # insert before 5
-    print(head.getValue() == 1)         # True
-    print(head.next.getValue() == 5)    # True
 
-    print("=== TEST insert_next ===")
-    a = MyList(1)
-    b = MyList(2)
-    c = MyList(3)
-    MyList.insert_next(a, b)   # insert b after a
-    MyList.insert_next(b, c)   # insert c after b
-    print(a.getValue(), a.next.getValue(), a.next.next.getValue())  # 1,2,3
+from typing import TypeVar, Generic, Optional
 
-    print("=== TEST insert_position ===")
-    l = MyList(0)
-    l.next = MyList(2)
-    MyList.insert_position(l, MyList(1), 0)  # insert after index 0
-    print(l.getValue(), l.next.getValue(), l.next.next.getValue())  # 0,1,2
+T = TypeVar("T")
 
-    print("==== TEST search ====")
-    head = MyList(10)
-    node2 = MyList(20)
-    node3 = MyList(30)
-    head.next = node2
-    node2.next = node3
+class Node(Generic[T]):
+    def __init__(self, value: T, next: Optional["Node[T]"] = None):
+        self.value: T = value
+        self.next: Optional[Node[T]] = next
 
-    print("Testing search on list: 10 -> 20 -> 30 -> None")
+    def __repr__(self) -> str:
+        return f"Node({self.value})"
 
-    # Search index 0 (should return head with value=10)
-    found = MyList.search(head, 0)
-    print("Index 0:", found.value if found else None)
 
-    # Search index 1 (should return node2 with value=20)
-    found = MyList.search(head, 1)
-    print("Index 1:", found.value if found else None)
+class LinkedList(Generic[T]):
+    def __init__(self):
+        self.head: Optional[Node[T]] = None
 
-    # Search index 2 (should return node3 with value=30)
-    found = MyList.search(head, 2)
-    print("Index 2:", found.value if found else None)
+    def is_empty(self) -> bool:
+        return self.head is None
 
-    # Search index 5 (out of range, should print 'not found.')
-    found = MyList.search(head, 5)
-    print("Index 5:", found.value if found else None)
+    def insert_head(self, value: T) -> None:
+        self.head = Node(value, self.head)
 
-    print("==== TEST delete_from_list ====")
-    head = MyList(1)
-    node2 = MyList(2)
-    node3 = MyList(3)
-    head.next = node2
-    node2.next = node3
+    def insert_tail(self, value: T) -> None:
+        if self.head is None:
+            self.head = Node(value)
+            return
+        curr = self.head
+        while curr.next:
+            curr = curr.next
+        curr.next = Node(value)
 
-    print("Original list:")
-    tmp = head
-    while tmp:
-        print(tmp.value, end=" -> ")
-        tmp = tmp.next
-    print("None")
+    def delete(self, value: T) -> bool:
+        if self.head is None:
+            return False
 
-    # delete node2 (value=2)
-    MyList.delete_from_list(head, node2)
+        # Delete head
+        if self.head.value == value:
+            self.head = self.head.next
+            return True
 
-    print("After deleting node with value=2:")
-    tmp = head
-    while tmp:
-        print(tmp.value, end=" -> ")
-        tmp = tmp.next
-    print("None")
+        prev, curr = self.head, self.head.next
+        while curr:
+            if curr.value == value:
+                prev.next = curr.next
+                return True
+            prev, curr = curr, curr.next
+        return False
 
-    # delete node3 (value=3)
-    MyList.delete_from_list(head, node3)
+    def search(self, value: T) -> Optional[Node[T]]:
+        curr = self.head
+        while curr:
+            if curr.value == value:
+                return curr
+            curr = curr.next
+        return None
 
-    print("After deleting node with value=3:")
-    tmp = head
-    while tmp:
-        print(tmp.value, end=" -> ")
-        tmp = tmp.next
-    print("None")
-
-if __name__ == '__main__':
-    # test_mylist()
-    a = MyList()
-    a.insert_head(MyList(2))
-    a.insert_head(MyList(5))
-    print(a)
+    def __str__(self) -> str:
+        values = []
+        curr = self.head
+        while curr:
+            values.append(str(curr.value))
+            curr = curr.next
+        return " -> ".join(values) + " -> None"

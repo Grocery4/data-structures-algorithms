@@ -94,6 +94,16 @@ class Graph:
     def existsEdge(self, u, v):
         return v in self.adjacency_list[u]
 
+    # returns a set of edges from out_node to target: in_node
+    def getInEdges(self, in_node):
+        in_edges = set()
+
+        for out_node in self.nodes:
+            if in_node in self.adjacency_list[out_node]:
+                in_edges.add((out_node, in_node))
+
+        return in_edges
+
     def adjacent(self, node):
         return self.adjacency_list[node]
 
@@ -110,7 +120,6 @@ class Graph:
                 else:
                     res.add((key, adj))
         return res
-
     
     # dfs requires a is_visited boolean and a stack of nodes
     # stack can be either implicit(recursive + call stack)
@@ -166,6 +175,84 @@ class Graph:
                 res += str(adj) + '\t'
             res += '\n'
         return res
+
+class WeightedGraph(Graph):
+    def __init__(self, node_count, directed=False):
+        self.node_count = node_count
+        self.directed = directed
+        self.nodes = [Node(i, f"node_{i}") for i in range(node_count)]
+        self.adjacency_list = {node: [] for node in self.nodes}
+
+    def addEdge(self, u, v, weight):
+        if not self.checkDuplicates(u, v):
+            self.adjacency_list[u].append((v, weight))
+            if not self.directed:
+                self.adjacency_list[v].append((u, weight))
+            return True
+
+        print("EDGE ALREADY EXISTS.")
+        return False
+
+    def getWeight(self, u, v):
+        """Return the weight of edge u->v, or None if it doesn't exist."""
+        for neighbor, weight in self.adjacency_list[u]:
+            if neighbor == v:
+                return weight
+        return None
+
+    def checkDuplicates(self, u, v):
+        if self.directed:
+            return any(neigh == v for neigh, _ in self.adjacency_list[u])
+        else:
+            return (any(neigh == v for neigh, _ in self.adjacency_list[u]) or
+                    any(neigh == u for neigh, _ in self.adjacency_list[v]))
+
+    def removeEdge(self, u, v):
+        removed = False
+        for neigh, w in list(self.adjacency_list[u]):
+            if neigh == v:
+                self.adjacency_list[u].remove((neigh, w))
+                removed = True
+        if not self.directed:
+            for neigh, w in list(self.adjacency_list[v]):
+                if neigh == u:
+                    self.adjacency_list[v].remove((neigh, w))
+        if not removed:
+            print("EDGE DOES NOT EXIST")
+        return removed
+
+    def existsEdge(self, u, v):
+        return any(neigh == v for neigh, _ in self.adjacency_list[u])
+
+    def adjacent(self, node):
+        # return only neighbors (ignore weights for traversal)
+        return [neigh for neigh, _ in self.adjacency_list[node]]
+
+    def adjacentWithWeights(self, node):
+        # helper if you also want weights
+        return self.adjacency_list[node]
+
+    def edges(self):
+        res = set()
+        for u in self.adjacency_list.keys():
+            for v, w in self.adjacency_list[u]:
+                if not self.directed:
+                    if (v, u, w) not in res:
+                        res.add((u, v, w))
+                else:
+                    res.add((u, v, w))
+        return res
+
+    def __str__(self):
+        res = ""
+        for node in self.adjacency_list.keys():
+            res += "[" + str(node) + "]: "
+            for adj, w in self.adjacency_list[node]:
+                res += f"({adj} . {w})\t"
+            res += "\n"
+        return res
+    
+
 
 if __name__ == '__main__':
     # g = Graph(10, directed=False)

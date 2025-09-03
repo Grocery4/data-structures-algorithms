@@ -57,7 +57,6 @@ def categorizeEdges(graph, edges, id, status, parent):
         elif status[adj_node.id] == StatusCodes.VISITED:
             if isDescendant(parent, id, adj_node.id):
                 edges["fwd"].append((id, adj_node.id))
-                print(id, adj_node.id)
             else:
                 edges["cross"].append((id, adj_node.id))
         

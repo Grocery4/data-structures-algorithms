@@ -15,12 +15,9 @@ def prim(graph, src):
         node = graph.getNode(pq.get()[1])
         for adj in graph.adjacent(node):
             if visited[adj] == False:
-                print(f'{node=}, {adj=}')
                 if cost[adj] > graph.getWeight(node, adj):
                     cost[adj] = graph.getWeight(node, adj)
                     parent[adj] = node
-                else:
-                    print('skipped!')
                 pq.put((cost[adj], adj.id))
 
         visited[node] = True

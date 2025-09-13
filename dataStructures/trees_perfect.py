@@ -1,5 +1,5 @@
 class PerfectTree:
-    def __init__(self, parent, left, right, value, level=0):
+    def __init__(self, parent=None, left=None, right=None, value=None, level=0):
         self.parent = parent
         self.left = left
         self.right = right
@@ -46,6 +46,24 @@ class PerfectTree:
             result += self.left._build_str(prefix + ("    " if is_left else "│   "), True)
 
         return result
+    
+    def __repr__(self):
+        return self._build_repr()
+        
+    def _build_repr(self, indent=0):
+        result = " " * indent + str(self.value) + "\n"
+
+        if self.left is not None:
+            result += self.left._build_repr(indent + 4)
+
+        if self.right is not None:
+            result += self.right._build_repr(indent + 4)
+
+        return result
+
+    def __lt__(self, other):
+        return self.value < other.value
+    
 
 def generate_perfect_binary_tree(current, depth):
     if depth <= 1:
